@@ -45,7 +45,7 @@ void printPrefix(unsigned int instA, unsigned int instW) {
 
 void instDecExec(unsigned int instWord)
 {
-	unsigned int rd, rs1, rs2, funct3, funct7, opcode;
+	unsigned int rd, rs1, rs2, funct3, funct7, opcode, I_mm_shift;
 	//unsigned int funct7 = 0;
 	unsigned int I_imm, S_imm, B_imm, U_imm, J_imm;
 	unsigned int address;
@@ -61,6 +61,7 @@ void instDecExec(unsigned int instWord)
 	
 	// — inst[31] — inst[30:25] inst[24:21] inst[20]
 	I_imm = ((instWord >> 20) & 0x7FF) | (((instWord >> 31) ? 0xFFFFF800 : 0x0));
+	I_mm_shift = (instWord >> 20) & 0x0000001F; //for SLLI, SRLI, SRAI
 
 	printPrefix(instPC, instWord);
 
@@ -126,12 +127,12 @@ void instDecExec(unsigned int instWord)
                     break;
         case 7:  cout << "\tANDI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
                     break;
-        case 1:  cout << "\tSLLI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
+        case 1:  cout << "\tSLLI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_mm_shift << "\n";
                     break;
         case 5: if (funct7 == 32){
-                cout << "\tSRLI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
+                cout << "\tSRAI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_mm_shift << "\n";
             }else{
-                cout << "\tSRAI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
+                cout << "\tSRLI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_mm_shift << "\n";
             }
                     break;
 
@@ -169,7 +170,7 @@ int main(int argc, char* argv[]) {
 				(((unsigned char)memory[pc + 3]) << 24);
 			pc += 4;
 			// remove the following line once you have a complete simulator
-			if (pc == fsize) break;			// stop when PC reached address 32
+			if (pc == fsize+4) break;			// stop when PC reached address 32
 			instDecExec(instWord);
 		}
 	}
