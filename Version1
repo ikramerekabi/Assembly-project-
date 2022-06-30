@@ -45,13 +45,15 @@ void printPrefix(unsigned int instA, unsigned int instW) {
 
 void instDecExec(unsigned int instWord)
 {
-    unsigned int t0, rd, rs1, rs2, funct3, funct7, opcode, I_mm_shift, I_mm_S_type_4_0, I_mm_S_type_11_5, I_mm_S_type;
+    unsigned int t0,t1, t2, t3, rd, rs1, rs2, funct3, funct7, opcode, I_mm_shift, I_mm_S_type_4_0, I_mm_S_type_11_5, I_mm_S_type;
+    unsigned int rd_C, rs1_C, Imm_C_2,Imm_C_6, Imm_C_5_3, rs2_C, funct3_C, Imm_C_I;
     //unsigned int funct7 = 0;
+    unsigned int opcode_16;
     unsigned int I_imm, S_imm, B_imm, U_imm, J_imm;
     unsigned int address;
 
     unsigned int instPC = pc - 4;
-
+    opcode_16 = instWord & 0x00000003;
     opcode = instWord & 0x0000007F;
     rd = (instWord >> 7) & 0x0000001F;
     I_mm_S_type_4_0 = rd;
@@ -67,122 +69,146 @@ void instDecExec(unsigned int instWord)
     // — inst[31] — inst[30:25] inst[24:21] inst[20]
     I_imm = ((instWord >> 20) & 0x7FF) | (((instWord >> 31) ? 0xFFFFF800 : 0x0));
     I_mm_shift = (instWord >> 20) & 0x0000001F; //for SLLI, SRLI, SRAI
+    //for compressed instructions
+    rd_C = (instWord >> 2) & 0x0007;
+    Imm_C_6 = (instWord >> 3) & 0x0001;
+    Imm_C_2 = (instWord >> 4) & 0x0001;
+    rs1_C = (instWord >> 7) & 0x0007;
+    Imm_C_5_3 = (instWord >> 10) & 0x0007;
+    funct3_C = (instWord >> 13) & 0x0007;
 
-    printPrefix(instPC, instWord);
+    t1 = (Imm_C_6 & 0x001)<<6;
+    t2 = (Imm_C_5_3 & 0x007)<<5;
+    Imm_C_I = t1 | t2;
+    t3 = (Imm_C_2 & 0x001)<<2; 
+    Imm_C_I = Imm_C_I | t3;
+    if (opcode_16 == 0x3)
+    {
+        printPrefix(instPC, instWord);
 
-    if (opcode == 0x33) {        // R Instructions
-        switch (funct3) {
-        case 0: if (funct7 == 32) {
-            cout << "\tSUB\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
-        }
-              else {
-            cout << "\tADD\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
-        }
-              break;
-
-        case 2:
-            cout << "\tSLT\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
-            break;
-
-        case 1:
-            cout << "\tSLL\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
-            break;
-        
-        case 3:
-            cout << "\tSLTU\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
-            break;
-
-        case 4:
-            cout << "\tXOR\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
-            break;
-
-        case 5: if (funct7 == 32)
-            {
-            cout << "\tSRA\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
+        if (opcode == 0x33) {        // R Instructions
+            switch (funct3) {
+            case 0: if (funct7 == 32) {
+                cout << "\tSUB\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
             }
-              else {
-            cout << "\tSRL\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
+                    else {
+                cout << "\tADD\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
             }
-            break;
+                    break;
 
-        case 6:
-            cout << "\tOR\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
-            break;
+            case 2:
+                cout << "\tSLT\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
+                break;
 
-        case 7:
-            cout << "\tAND\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
-
-            break;
+            case 1:
+                cout << "\tSLL\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
+                break;
             
-        default:
-            cout << "\tUnkown R Instruction \n";
-        }
-    }
-    else if (opcode == 0x13) {    // I instructions
-        switch (funct3) {
-        case 0:    cout << "\tADDI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
-            break;
-        case 2:  cout << "\tSLTI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
-                    break;
-        case 3:  cout << "\tSLTIU\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
-                    break;
-        case 4:  cout << "\tXORI\tx" << rd << ", x" << rs1 << ", " <<  hex << "0x" << (int)I_imm << "\n";
-                    break;
-        case 6:  cout << "\tORI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
-                    break;
-        case 7:  cout << "\tANDI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
-                    break;
-        case 1:  cout << "\tSLLI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_mm_shift << "\n";
-                    break;
-        case 5: if (funct7 == 32){
-                cout << "\tSRAI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_mm_shift << "\n";
-            }else{
-                cout << "\tSRLI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_mm_shift << "\n";
-            }
-                    break;
-        default:
-        cout << "\tUnkown I Instruction \n";
-         }
-    }
-// S instructions
-	else if (opcode == 0x23) 
-	{
-		switch (funct3) {
-		case 0:	cout << "\tSB\tx" << rs2 <<  ", " << hex << "0x" << (int)I_mm_S_type << "(x"<< rs1<< ")"<<"\n";
-			break;
-		case 1:  cout << "\tSH\tx" << rs2 << ", " << hex << "0x" << (int)I_mm_S_type << "(x" << rs1 << ")" << "\n";
-			break;
-		case 2:  cout << "\tSW\tx" << rs2 << ", " << hex << "0x" << (int)I_mm_S_type << "(x" << rs1 << ")" << "\n";
-			break;
-		default:
-			cout << "\tUnkown S Instruction \n";
-		}
-	}
+            case 3:
+                cout << "\tSLTU\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
+                break;
 
-    else if (opcode == 0x3) { //I instructions (load instructions)
-        switch (funct3) {
-            case 0:  cout << "\tLB\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
+            case 4:
+                cout << "\tXOR\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
                 break;
-            case 1:  cout << "\tLH\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
+
+            case 5: if (funct7 == 32)
+                {
+                cout << "\tSRA\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
+                }
+                    else {
+                cout << "\tSRL\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
+                }
                 break;
-            case 2:  cout << "\tLW\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
+
+            case 6:
+                cout << "\tOR\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
                 break;
-            case 4:  cout << "\tLBU\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
+
+            case 7:
+                cout << "\tAND\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
+
                 break;
-            case 5:  cout << "\tLHU\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
-                break;
-         default:
-        cout << "\tUnkown I Instruction \n";
                 
+            default:
+                cout << "\tUnkown R Instruction \n";
+            }
         }
-       
-    }
-    
-    
-    else {
-        cout << "\tUnkown Instruction \n";
-    }
+        else if (opcode == 0x13) {    // I instructions
+            switch (funct3) {
+            case 0:    cout << "\tADDI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
+                break;
+            case 2:  cout << "\tSLTI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
+                        break;
+            case 3:  cout << "\tSLTIU\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
+                        break;
+            case 4:  cout << "\tXORI\tx" << rd << ", x" << rs1 << ", " <<  hex << "0x" << (int)I_imm << "\n";
+                        break;
+            case 6:  cout << "\tORI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
+                        break;
+            case 7:  cout << "\tANDI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
+                        break;
+            case 1:  cout << "\tSLLI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_mm_shift << "\n";
+                        break;
+            case 5: if (funct7 == 32){
+                    cout << "\tSRAI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_mm_shift << "\n";
+                }else{
+                    cout << "\tSRLI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_mm_shift << "\n";
+                }
+                        break;
+            default:
+            cout << "\tUnkown I Instruction \n";
+                }
+        }
+        // S instructions
+        else if (opcode == 0x23) 
+        {
+            switch (funct3) {
+            case 0:	cout << "\tSB\tx" << rs2 <<  ", " << hex << "0x" << (int)I_mm_S_type << "(x"<< rs1<< ")"<<"\n";
+                break;
+            case 1:  cout << "\tSH\tx" << rs2 << ", " << hex << "0x" << (int)I_mm_S_type << "(x" << rs1 << ")" << "\n";
+                break;
+            case 2:  cout << "\tSW\tx" << rs2 << ", " << hex << "0x" << (int)I_mm_S_type << "(x" << rs1 << ")" << "\n";
+                break;
+            default:
+                cout << "\tUnkown S Instruction \n";
+            }
+        }
 
+        else if (opcode == 0x3) { //I instructions (load instructions)
+            switch (funct3) {
+                case 0:  cout << "\tLB\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
+                    break;
+                case 1:  cout << "\tLH\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
+                    break;
+                case 2:  cout << "\tLW\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
+                    break;
+                case 4:  cout << "\tLBU\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
+                    break;
+                case 5:  cout << "\tLHU\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
+                    break;
+                default:
+            cout << "\tUnkown I Instruction \n";
+                    
+            }
+            
+        }
+
+
+        else {
+            cout << "\tUnkown Instruction \n";
+        }
+
+        }
+    else{
+    if (opcode_16 == 0x0)
+        {
+            switch (funct3) {
+            case 2:  cout << "\tCLW\tx" << rd_C << ", 0x" << hex << (int)Imm_C_I << "(x" << rs1_C << ")" << "\n";
+                break;
+            }
+        }
+}
 }
 
 int main(int argc, char* argv[]) {
