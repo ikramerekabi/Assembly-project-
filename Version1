@@ -46,7 +46,7 @@ void printPrefix(unsigned int instA, unsigned int instW) {
 
 void instDecExec(unsigned int instWord)
 {
-    unsigned int rd, rs1, rs2, funct3, funct7, opcode, I_mm_shift;
+    unsigned int t0, rd, rs1, rs2, funct3, funct7, opcode, I_mm_shift, I_mm_S_type_4_0, I_mm_S_type_11_5, I_mm_S_type;
     //unsigned int funct7 = 0;
     unsigned int I_imm, S_imm, B_imm, U_imm, J_imm;
     unsigned int address;
@@ -55,11 +55,16 @@ void instDecExec(unsigned int instWord)
 
     opcode = instWord & 0x0000007F;
     rd = (instWord >> 7) & 0x0000001F;
+    I_mm_S_type_4_0 = rd;
     funct3 = (instWord >> 12) & 0x00000007;
     rs1 = (instWord >> 15) & 0x0000001F;
     rs2 = (instWord >> 20) & 0x0000001F;
     funct7 = (instWord >> 25) & 0x0000007F;
-    
+    I_mm_S_type_11_5 = funct7;
+    I_mm_shift = (instWord >> 20) & 0x0000001F;
+	t0 = I_mm_S_type_11_5 & 0x07F;
+	t0 = t0 << 5;
+	I_mm_S_type = (t0 | I_mm_S_type_4_0);
     // — inst[31] — inst[30:25] inst[24:21] inst[20]
     I_imm = ((instWord >> 20) & 0x7FF) | (((instWord >> 31) ? 0xFFFFF800 : 0x0));
     I_mm_shift = (instWord >> 20) & 0x0000001F; //for SLLI, SRLI, SRAI
@@ -140,18 +145,35 @@ void instDecExec(unsigned int instWord)
         cout << "\tUnkown I Instruction \n";
          }
     }
+// S instructions
+	else if (opcode == 0x23) 
+	{
+		switch (funct3) {
+		case 0:	cout << "\tSB\tx" << rs2 <<  ", " << hex << "0x" << (int)I_mm_S_type << "(x"<< rs1<< ")"<<"\n";
+			break;
+		case 1:  cout << "\tSH\tx" << rs2 << ", " << hex << "0x" << (int)I_mm_S_type << "(x" << rs1 << ")" << "\n";
+			break;
+		case 2:  cout << "\tSW\tx" << rs2 << ", " << hex << "0x" << (int)I_mm_S_type << "(x" << rs1 << ")" << "\n";
+			break;
+		default:
+			cout << "\tUnkown S Instruction \n";
+		}
+	}
+
     else if (opcode == 0x3) { //I instructions (load instructions)
         switch (funct3) {
-            case 0:  cout << "\tLB\tx" << rd << ", 0x" << hex << (int)I_imm << "( x "<< rs1 <<  ")" << "\n";
+            case 0:  cout << "\tLB\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
                 break;
-            case 1:  cout << "\tLH\tx" << rd << ", 0x" << hex << (int)I_imm << "( x"<< rs1 <<  ")" << "\n";
+            case 1:  cout << "\tLH\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
                 break;
-            case 2:  cout << "\tLW\tx" << rd << ", 0x" << hex << (int)I_imm << "( x"<< rs1 <<  ")" << "\n";
+            case 2:  cout << "\tLW\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
                 break;
-            case 4:  cout << "\tLBU\tx" << rd << ", 0x" << hex << (int)I_imm << "( x"<< rs1 <<  ")" << "\n";
+            case 4:  cout << "\tLBU\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
                 break;
-            case 5:  cout << "\tLHU\tx" << rd << ", 0x" << hex << (int)I_imm << "( x"<< rs1 <<  ")" << "\n";
+            case 5:  cout << "\tLHU\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
                 break;
+         default:
+        cout << "\tUnkown I Instruction \n";
                 
         }
        
