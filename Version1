@@ -46,13 +46,14 @@ void printPrefix(unsigned int instA, unsigned int instW) {
 void instDecExec(unsigned int instWord)
 {
     unsigned int t0,t1, t2, t3, rd, rs1, rs2, funct3, funct7, opcode, I_mm_shift, I_mm_S_type_4_0, I_mm_S_type_11_5, I_mm_S_type;
-    unsigned int rd_C, rs1_C, Imm_C_2,Imm_C_6, Imm_C_5_3, rs2_C, funct3_C, Imm_C_I;
-    //unsigned int funct7 = 0;
+    unsigned int rd_C, rs1_C, Imm_C_2,Imm_C_6, Imm_C_5_3, rs2_C, funct3_C, Imm_C_load, nzImm_4_0, nzImm_5, rd_rs1, I_imm_C;
     unsigned int opcode_16;
     unsigned int I_imm, S_imm, B_imm, U_imm, J_imm;
     unsigned int address;
+    unsigned int 
 
     unsigned int instPC = pc - 4;
+    
     opcode_16 = instWord & 0x00000003;
     opcode = instWord & 0x0000007F;
     rd = (instWord >> 7) & 0x0000001F;
@@ -68,20 +69,40 @@ void instDecExec(unsigned int instWord)
 	I_mm_S_type = (t0 | I_mm_S_type_4_0);
     // — inst[31] — inst[30:25] inst[24:21] inst[20]
     I_imm = ((instWord >> 20) & 0x7FF) | (((instWord >> 31) ? 0xFFFFF800 : 0x0));
-    I_mm_shift = (instWord >> 20) & 0x0000001F; //for SLLI, SRLI, SRAI
+    I_mm_shift = (instWord >> 20) & 0x0000001F;  //for SLLI, SRLI, SRAI
+
+
     //for compressed instructions
     rd_C = (instWord >> 2) & 0x0007;
-    Imm_C_6 = (instWord >> 3) & 0x0001;
-    Imm_C_2 = (instWord >> 4) & 0x0001;
+    Imm_C_6 = (instWord >> 5) & 0x0001;    
+    Imm_C_2 = (instWord >> 6) & 0x0001;
     rs1_C = (instWord >> 7) & 0x0007;
     Imm_C_5_3 = (instWord >> 10) & 0x0007;
+
     funct3_C = (instWord >> 13) & 0x0007;
 
-    t1 = (Imm_C_6 & 0x001)<<6;
-    t2 = (Imm_C_5_3 & 0x007)<<5;
-    Imm_C_I = t1 | t2;
+    t1 = (Imm_C_6 & 0x001)<<6; // can we just and it with 0x1 instead of 0x001?????? 
+    t2 = (Imm_C_5_3 & 0x007)<<5; // same question for these? ????????????
+    Imm_C_load = t1 | t2;
     t3 = (Imm_C_2 & 0x001)<<2; 
-    Imm_C_I = Imm_C_I | t3;
+    Imm_C_load = Imm_C_load | t3;
+
+   //for compressed I types 
+
+    nzImm_4_0 = (instWord >> 2) & 0x001F; // store bits from 0 to 4 from the immediate 
+    rd_rs1 = (instWord >> 7 ) & 0x003F;   // store the bits of rd/rs 
+    nzImm_5= (instWord >> 11 ) & 0x0001;  // store the last bit of the immediate 
+
+    I_imm_C= ((nzImm_5 & 0x1) <<4 ) | (nzImm_4_0 & 0x1F) // put back the values of the immediate together. 
+
+
+
+    
+    
+
+
+
+
     if (opcode_16 == 0x3)
     {
         printPrefix(instPC, instWord);
@@ -193,21 +214,35 @@ void instDecExec(unsigned int instWord)
             }
             
         }
-
-
         else {
             cout << "\tUnkown Instruction \n";
         }
 
         }
     else{
-    if (opcode_16 == 0x0)
-        {
+    if (opcode_16 == 0x0) {
             switch (funct3) {
-            case 2:  cout << "\tCLW\tx" << rd_C << ", 0x" << hex << (int)Imm_C_I << "(x" << rs1_C << ")" << "\n";
+            case 2:  cout << "\tC.LW\tx" << rd_C << ", 0x" << hex << (int)Imm_C_load << "(x" << rs1_C << ")" << "\n";
                 break;
             }
-        }
+            case 6: cout << "\tC.SW\tx" << rd_C << ", 0x" << hex << (int)Imm_C_load << "(x" << rs1_C << ")" << "\n";
+                break;
+
+    }else if (opcode_16 == 0x1){
+           switch (funct3) {
+            case 0:  cout << "\tC.ADDI\tx" << rd_rs1 << ", x" << rd_rs1 << ", " << hex << "0x" << (int) I_imm_C << "\n";
+                break;
+
+           }
+    }else if (opcode_16 == 0x2){
+           switch (funct3) {
+            case 0:  cout << "\tC.SLLI\tx" << rd_rs1 << ", x" << rd_rs1 << ", " << hex << "0x" << (int) I_imm_C << "\n";
+                break;
+            case 4: 
+
+
+           }
+    }
 }
 }
 
