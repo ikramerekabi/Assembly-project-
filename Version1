@@ -50,10 +50,10 @@ void instDecExec(unsigned int instWord)
     unsigned int opcode_16;
     unsigned int I_imm, S_imm, B_imm, U_imm, J_imm;
     unsigned int address;
-    unsigned int 
+    unsigned int rs1_rd_dash, funct2;  
 
     unsigned int instPC = pc - 4;
-    
+
     opcode_16 = instWord & 0x00000003;
     opcode = instWord & 0x0000007F;
     rd = (instWord >> 7) & 0x0000001F;
@@ -93,8 +93,10 @@ void instDecExec(unsigned int instWord)
     rd_rs1 = (instWord >> 7 ) & 0x003F;   // store the bits of rd/rs 
     nzImm_5= (instWord >> 11 ) & 0x0001;  // store the last bit of the immediate 
 
-    I_imm_C= ((nzImm_5 & 0x1) <<4 ) | (nzImm_4_0 & 0x1F) // put back the values of the immediate together. 
+    I_imm_C= ((nzImm_5 & 0x1) <<4 ) | (nzImm_4_0 & 0x1F);// put back the values of the immediate together. 
 
+    rs1_rd_dash = (instWord >> 7 ) & 0x000F;  // store the value of rs1'/ rd'
+    funct2 = (instWord >> 11 ) & 0x0003;      // store funct2 value 
 
 
     
@@ -106,8 +108,8 @@ void instDecExec(unsigned int instWord)
     if (opcode_16 == 0x3)
     {
         printPrefix(instPC, instWord);
-
-        if (opcode == 0x33) {        // R Instructions
+        // R instructions 
+        if (opcode == 0x33) {       
             switch (funct3) {
             case 0: if (funct7 == 32) {
                 cout << "\tSUB\tx" << rd << ", x" << rs1 << ", x" << rs2 << "\n";
@@ -154,8 +156,9 @@ void instDecExec(unsigned int instWord)
             default:
                 cout << "\tUnkown R Instruction \n";
             }
-        }
-        else if (opcode == 0x13) {    // I instructions
+        } 
+        // I instructions
+        else if (opcode == 0x13) {    
             switch (funct3) {
             case 0:    cout << "\tADDI\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
                 break;
@@ -195,8 +198,8 @@ void instDecExec(unsigned int instWord)
                 cout << "\tUnkown S Instruction \n";
             }
         }
-
-        else if (opcode == 0x3) { //I instructions (load instructions)
+        //I instructions (load instructions)
+        else if (opcode == 0x3) { 
             switch (funct3) {
                 case 0:  cout << "\tLB\tx" << rd << ", 0x" << hex << (int)I_imm << "(x"<< rs1 <<  ")" << "\n";
                     break;
@@ -220,29 +223,45 @@ void instDecExec(unsigned int instWord)
 
         }
     else{
+    // Compressed instructions
     if (opcode_16 == 0x0) {
             switch (funct3) {
             case 2:  cout << "\tC.LW\tx" << rd_C << ", 0x" << hex << (int)Imm_C_load << "(x" << rs1_C << ")" << "\n";
                 break;
-            }
+
             case 6: cout << "\tC.SW\tx" << rd_C << ", 0x" << hex << (int)Imm_C_load << "(x" << rs1_C << ")" << "\n";
-                break;
+                break;   
+            }
+           
 
     }else if (opcode_16 == 0x1){
            switch (funct3) {
+            // compressed I instructions 
             case 0:  cout << "\tC.ADDI\tx" << rd_rs1 << ", x" << rd_rs1 << ", " << hex << "0x" << (int) I_imm_C << "\n";
                 break;
+            case 4: if (funct2 == 0 ){
+                cout << "\tC.SRLI\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", " << hex << "0x" << (int) I_imm_C << "\n";
+                break;
+            }else if (funct2 == 1 ){
+                cout << "\tC.SRAI\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", " << hex << "0x" << (int) I_imm_C << "\n";
+                break;
+            }else if (funct2 === 2 ){
+                cout << "\tC.ANDI\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", " << hex << "0x" << (int) I_imm_C << "\n";
+                break;  // in the instruction it is written as imm not nzimm , would it make a diff when coding ? should we add extra conditions? 
+            }
 
            }
     }else if (opcode_16 == 0x2){
            switch (funct3) {
             case 0:  cout << "\tC.SLLI\tx" << rd_rs1 << ", x" << rd_rs1 << ", " << hex << "0x" << (int) I_imm_C << "\n";
                 break;
-            case 4: 
+           
 
 
            }
-    }
+    }else {
+            cout << "\tUnkown Compresssed Instruction \n";
+        }
 }
 }
 
