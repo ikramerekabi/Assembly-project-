@@ -46,7 +46,7 @@ void printPrefix(unsigned int instA, unsigned int instW) {
 void instDecExec(unsigned int instWord)
 {
     unsigned int t0,t1, t2, t3, rd, rs1, rs2, funct3, funct7, opcode, I_mm_shift, I_mm_S_type_4_0, I_mm_S_type_11_5, I_mm_S_type;
-    unsigned int rd_C, rs1_C, Imm_C_2,Imm_C_6, Imm_C_5_3, rs2_C, funct3_C, Imm_C_load, nzImm_4_0, nzImm_5, rd_rs1, I_imm_C;
+    unsigned int rd_C, rs1_C, Imm_C_2,Imm_C_6, Imm_C_5_3, rs2_C, funct3_C, Imm_C_load, nzImm_4_0, nzImm_5, rd_rs1, I_imm_C, B_imm_C;
     unsigned int opcode_16;
     unsigned int I_imm, S_imm, B_imm, U_imm, J_imm;
     unsigned int address;
@@ -71,7 +71,9 @@ void instDecExec(unsigned int instWord)
     // — inst[31] — inst[30:25] inst[24:21] inst[20]
     I_imm = ((instWord >> 20) & 0x7FF) | (((instWord >> 31) ? 0xFFFFF800 : 0x0));
     I_mm_shift = (instWord >> 20) & 0x0000001F;  //for SLLI, SRLI, SRAI
-
+    B_imm=  ((instWord >> 8) & 0x0F)| ((instWord >> 21) & 0x3F0) |((instWord << 4) & 0x400)| ((instWord >> 2) & 0x800);
+    U_imm=(instWord>>12)& 0xFFFFF;
+    J_imm= ((instWord>>21)&0x3FF)| ((instWord>>10)&0x400)|((instWord>>1)& 0x7F800)|((instWord>>12)&0x80000);
 
     //for compressed instructions
     rd_C = (instWord >> 2) & 0x0007;
@@ -118,6 +120,8 @@ void instDecExec(unsigned int instWord)
     //getting the values of the immediate value for the c.jal 
     imm_C_Jal= ((imm_C_Jal_11 & 0x001)<<11) | ((imm_C_Jal_10 & 0x001)<<10) | ((imm_C_Jal_9_8 & 0x003)<<8) | ((imm_C_Jal_7 & 0x001)<< 7) | ((imm_C_Jal_6 & 0x001)<< 6)|((imm_C_Jal_5 & 0x001)<< 5) | ((imm_C_Jal_4 & 0x001)<< 4)| ((imm_C_Jal_3_1 & 0x001)<< 1);
 
+    //for compressed B Instructions
+    B_imm_C= ((instWord>>3)&0xF)| ((instWord<<2)& 0x1F) | ((instWord>> 5)& 0xE0);
 
 
     if (opcode_16 == 0x3)
@@ -232,6 +236,42 @@ void instDecExec(unsigned int instWord)
             }
             
         }
+        // B Instructions
+        else if(opcode== 0x63){
+              switch (funct3) {
+                case 0:  cout << "\tBEQ\tx" << rs1 << ", x" << rs2  << ", 0x" << hex << (int)B_imm << "\n";
+                    break;
+                case 1:  cout << "\tBNE\tx" << rs1 << ", x" << rs2  << ", 0x" << hex << (int)B_imm << "\n";
+                    break;
+                case 4:  cout << "\tBLT\tx" << rs1 <<  ", x" << rs2  << ", 0x" << hex << (int)B_imm << "\n";
+                    break;
+                case 5:  cout << "\tBGE\tx" << rs1 <<  ", x" << rs2  << ", 0x" << hex << (int)B_imm << "\n";
+                    break;
+                case 6:  cout << "\tBLTU\tx" << rs1 <<  ", x" << rs2  << ", 0x" << hex << (int)B_imm << "\n";
+                    break;
+                case 7:  cout << "\tBGEU\tx" << rs1 << ", x" << rs2  << ", 0x" << hex << (int)B_imm << "\n";
+                    break;
+                default:
+            cout << "\tUnkown B Instruction \n";
+        }
+        }
+        
+        else if(opcode== 0x37){
+              cout << "\tLUI\tx" << rd <<  ", " << hex << "0x" << (int)U_imm << "\n";
+                break;
+        }
+         else if(opcode== 0x17){
+              cout << "\tAUIPC\tx" << rd <<  ", " << hex << "0x" << (int)U_imm << "\n";
+                break;
+        }
+          else if(opcode== 0x17){
+                cout << "\tJAL\tx" << rd <<  ", " << hex << "0x" << (int)J_imm << "\n";
+                break;
+        }
+           else if(opcode== 0x67){
+                 cout << "\tJALR\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
+                break;
+        }
         else {
             cout << "\tUnkown Instruction \n";
         }
@@ -284,7 +324,14 @@ void instDecExec(unsigned int instWord)
                         break;   
                 }
             }
-            
+            break;
+            case 6:
+             cout << "\tC.BEQZ\tx" << rs1_C <<", " << hex << "0x" << (int) B_imm_C << "\n";
+             break;
+
+            case 7:
+              cout << "\tC.BNEZ\tx" << rs1_C <<", " << hex << "0x" << (int) B_imm_C << "\n";
+             break;
            }
     }else if (opcode_16 == 0x2){
            switch (funct3_C) {
