@@ -117,6 +117,7 @@ void instDecExec(unsigned int instWord)
     imm_C_Jal_9_8 = (instWord>>9)& 0x003;
     imm_C_Jal_4= (instWord>>11)& 0x001;
     imm_C_Jal_11= (instWord>>12)& 0x001;
+        
     //getting the values of the immediate value for the c.jal 
     imm_C_Jal= ((imm_C_Jal_11 & 0x001)<<11) | ((imm_C_Jal_10 & 0x001)<<10) | ((imm_C_Jal_9_8 & 0x003)<<8) | ((imm_C_Jal_7 & 0x001)<< 7) | ((imm_C_Jal_6 & 0x001)<< 6)|((imm_C_Jal_5 & 0x001)<< 5) | ((imm_C_Jal_4 & 0x001)<< 4)| ((imm_C_Jal_3_1 & 0x001)<< 1);
 
@@ -258,19 +259,19 @@ void instDecExec(unsigned int instWord)
         
         else if(opcode== 0x37){
               cout << "\tLUI\tx" << rd <<  ", " << hex << "0x" << (int)U_imm << "\n";
-                break;
+              
         }
          else if(opcode== 0x17){
               cout << "\tAUIPC\tx" << rd <<  ", " << hex << "0x" << (int)U_imm << "\n";
-                break;
+               
         }
           else if(opcode== 0x17){
                 cout << "\tJAL\tx" << rd <<  ", " << hex << "0x" << (int)J_imm << "\n";
-                break;
+                
         }
            else if(opcode== 0x67){
                  cout << "\tJALR\tx" << rd << ", x" << rs1 << ", " << hex << "0x" << (int)I_imm << "\n";
-                break;
+              
         }
         else {
             cout << "\tUnkown Instruction \n";
