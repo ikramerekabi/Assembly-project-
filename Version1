@@ -304,8 +304,9 @@ void instDecExec(unsigned int instWord)
         {
             switch (funct3)
             {
-            case 0:
+            case 0:cout << "\tADDI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
                 break;
+    
             case 2:
                 cout << "\tSLTI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
                 break;
