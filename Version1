@@ -251,47 +251,47 @@ void instDecExec(unsigned int instWord)
             case 0:
                 if (funct7 == 32)
                 {
-                    cout << "\tSUB\tx" << ABIname(rd) << ", x" <<  ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                    cout << "\tSUB\t" << ABIname(rd) << ", " <<  ABIname(rs1) << ", " << ABIname(rs2) << "\n";
                 }
                 else
                 {
-                    cout << "\tADD\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                    cout << "\tADD\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << ABIname(rs2) << "\n";
                 }
                 break;
 
             case 2:
-                cout << "\tSLT\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                    cout << "\tSLT\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << ABIname(rs2) << "\n";
                 break;
 
             case 1:
-                cout << "\tSLL\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                     cout << "\tSLL\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << ABIname(rs2) << "\n";
                 break;
 
             case 3:
-                cout << "\tSLTU\tx" << ABIname(rd)<< ", x" << ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                cout << "\tSLTU\t" << ABIname(rd)<< ", " << ABIname(rs1) << ", " << ABIname(rs2) << "\n";
                 break;
 
             case 4:
-                cout << "\tXOR\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                cout << "\tXOR\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << ABIname(rs2) << "\n";
                 break;
 
             case 5:
                 if (funct7 == 32)
                 {
-                    cout << "\tSRA\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                    cout << "\tSRA\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << ABIname(rs2) << "\n";
                 }
                 else
                 {
-                    cout << "\tSRL\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                    cout << "\tSRL\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << ABIname(rs2) << "\n";
                 }
                 break;
 
             case 6:
-                cout << "\tOR\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                cout << "\tOR\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << ABIname(rs2) << "\n";
                 break;
 
             case 7:
-                cout << "\tAND\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", x" << ABIname(rs2) << "\n";
+                cout << "\tAND\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << ABIname(rs2) << "\n";
 
                 break;
 
@@ -305,34 +305,33 @@ void instDecExec(unsigned int instWord)
             switch (funct3)
             {
             case 0:
-                cout << "\tADDI\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
                 break;
             case 2:
-                cout << "\tSLTI\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
+                cout << "\tSLTI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
                 break;
             case 3:
-                cout << "\tSLTIU\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
+                cout << "\tSLTIU\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
                 break;
             case 4:
-                cout << "\tXORI\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
+                cout << "\tXORI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
                 break;
             case 6:
-                cout << "\tORI\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
+                cout << "\tORI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
                 break;
             case 7:
-                cout << "\tANDI\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
+                cout << "\tANDI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
                 break;
             case 1:
-                cout << "\tSLLI\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_mm_shift << "\n";
+                cout << "\tSLLI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_mm_shift << "\n";
                 break;
             case 5:
                 if (funct7 == 32)
                 {
-                    cout << "\tSRAI\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_mm_shift << "\n";
+                    cout << "\tSRAI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_mm_shift << "\n";
                 }
                 else
                 {
-                    cout << "\tSRLI\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_mm_shift << "\n";
+                    cout << "\tSRLI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_mm_shift << "\n";
                 }
                 break;
             default:
@@ -345,15 +344,15 @@ void instDecExec(unsigned int instWord)
             switch (funct3)
             {
             case 0:
-                cout << "\tSB\tx" << ABIname(rs2) << ", " << hex << "0x" << (int)I_mm_S_type << "(x" << ABIname(rs1) << ")"
+                cout << "\tSB\t" << ABIname(rs2) << ", " << hex << "0x" << (int)I_mm_S_type << "(" << ABIname(rs1) << ")"
                      << "\n";
                 break;
             case 1:
-                cout << "\tSH\tx" << ABIname(rs2) << ", " << hex << "0x" << (int)I_mm_S_type << "(x" << ABIname(rs1) << ")"
+                cout << "\tSH\t" << ABIname(rs2) << ", " << hex << "0x" << (int)I_mm_S_type << "(" << ABIname(rs1) << ")"
                      << "\n";
                 break;
             case 2:
-                cout << "\tSW\tx" << ABIname(rs2) << ", " << hex << "0x" << (int)I_mm_S_type << "(x" << ABIname(rs1) << ")"
+                cout << "\tSW\t" << ABIname(rs2) << ", " << hex << "0x" << (int)I_mm_S_type << "(" << ABIname(rs1) << ")"
                      << "\n";
                 break;
             default:
@@ -366,23 +365,23 @@ void instDecExec(unsigned int instWord)
             switch (funct3)
             {
             case 0:
-                cout << "\tLB\tx" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(x" << ABIname(rs1) << ")"
+                cout << "\tLB\t" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(" << ABIname(rs1) << ")"
                      << "\n";
                 break;
             case 1:
-                cout << "\tLH\tx" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(x" << ABIname(rs1) << ")"
+                cout << "\tLH\t" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(" << ABIname(rs1) << ")"
                      << "\n";
                 break;
             case 2:
-                cout << "\tLW\tx" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(x" << ABIname(rs1) << ")"
+                cout << "\tLW\t" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(" << ABIname(rs1) << ")"
                      << "\n";
                 break;
             case 4:
-                cout << "\tLBU\tx" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(x" << ABIname(rs1) << ")"
+                cout << "\tLBU\t" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(" << ABIname(rs1) << ")"
                      << "\n";
                 break;
             case 5:
-                cout << "\tLHU\tx" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(x" << ABIname(rs1) << ")"
+                cout << "\tLHU\t" << ABIname(rd) << ", 0x" << hex << (int)I_imm << "(" << ABIname(rs1) << ")"
                      << "\n";
                 break;
             default:
@@ -395,22 +394,22 @@ void instDecExec(unsigned int instWord)
             switch (funct3)
             {
             case 0:
-                cout << "\tBEQ\tx" << ABIname(rs1) << ", x" << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
+                cout << "\tBEQ\t" << ABIname(rs1) << ", " << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
                 break;
             case 1:
-                cout << "\tBNE\tx" << ABIname(rs1) << ", x" << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
+                cout << "\tBNE\t" << ABIname(rs1) << ", " << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
                 break;
             case 4:
-                cout << "\tBLT\tx" << ABIname(rs1) << ", x" << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
+                cout << "\tBLT\t" << ABIname(rs1) << ", " << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
                 break;
             case 5:
-                cout << "\tBGE\tx" << ABIname(rs1) << ", x" << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
+                cout << "\tBGE\t" << ABIname(rs1) << ", " << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
                 break;
             case 6:
-                cout << "\tBLTU\tx" << ABIname(rs1) << ", x" << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
+                cout << "\tBLTU\t" << ABIname(rs1) << ", " << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
                 break;
             case 7:
-                cout << "\tBGEU\tx" << ABIname(rs1) << ", x" << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
+                cout << "\tBGEU\t" << ABIname(rs1) << ", " << ABIname(rs2) << ", 0x" << hex << (int)B_imm << "\n";
                 break;
             default:
                 cout << "\tUnkown B Instruction \n";
@@ -419,19 +418,19 @@ void instDecExec(unsigned int instWord)
 
         else if (opcode == 0x37)
         {
-            cout << "\tLUI\tx" << ABIname(rd) << ", " << hex << "0x" << (int)U_imm << "\n";
+            cout << "\tLUI\t" << ABIname(rd) << ", " << hex << "0x" << (int)U_imm << "\n";
         }
         else if (opcode == 0x17)
         {
-            cout << "\tAUIPC\tx" << ABIname(rd) << ", " << hex << "0x" << (int)U_imm << "\n";
+            cout << "\tAUIPC\t" << ABIname(rd) << ", " << hex << "0x" << (int)U_imm << "\n";
         }
         else if (opcode == 0x17)
         {
-            cout << "\tJAL\tx" << ABIname(rd) << ", " << hex << "0x" << (int)J_imm << "\n";
+            cout << "\tJAL\t" << ABIname(rd) << ", " << hex << "0x" << (int)J_imm << "\n";
         }
         else if (opcode == 0x67)
         {
-            cout << "\tJALR\tx" << ABIname(rd) << ", x" << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
+            cout << "\tJALR\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
         }
         else
         {
@@ -446,12 +445,12 @@ void instDecExec(unsigned int instWord)
             switch (funct3_C)
             {
             case 2:
-                cout << "\tC.LW\tx" << ABIname(rd_C+8) << ", 0x" << hex << (int)Imm_C_load << "(x" << ABIname(rs1_C+8) << ")"
+                cout << "\tC.LW\t" << ABIname(rd_C+8) << ", 0x" << hex << (int)Imm_C_load << "(" << ABIname(rs1_C+8) << ")"
                      << "\n";
                 break;
 
             case 6:
-                cout << "\tC.SW\tx" << ABIname(rd_C+8) << ", 0x" << hex << (int)Imm_C_load << "(x" << ABIname(rs1_C+8) << ")"
+                cout << "\tC.SW\t" << ABIname(rd_C+8) << ", 0x" << hex << (int)Imm_C_load << "(" << ABIname(rs1_C+8) << ")"
                      << "\n";
                 break;
             }
@@ -462,28 +461,28 @@ void instDecExec(unsigned int instWord)
             {
             // compressed I instructions
             case 0:
-                cout << "\tC.ADDI\tx" << ABIname(rd_rs1+8) << ", x" << ABIname(rd_rs1+8) << ", " << hex << "0x" << (int)I_imm_C << "\n";
+                cout << "\tC.ADDI\t" << ABIname(rd_rs1+8) << ", " << ABIname(rd_rs1+8) << ", " << hex << "0x" << (int)I_imm_C << "\n";
                 break;
             case 1:
-                cout << "\tC.JAL\tx1, " <<hex << "0x" << imm_C_Jal << "\n";
+                cout << "\tC.JAL\tra, " <<hex << "0x" << imm_C_Jal << "\n";
                 break;
             case 3:
                 if (rd_rs1 != 0 && rd_rs1 != 2)
                 {
-                    cout << "\tC.LUI\tx" << ABIname(rd_rs1+8) << ", " << hex << "0x" << (int)nzimm_LUI << "\n";
+                    cout << "\tC.LUI\t" << ABIname(rd_rs1+8) << ", " << hex << "0x" << (int)nzimm_LUI << "\n";
                 }
             case 4:
                 if (funct2_2 == 0)
                 {
-                    cout << "\tC.SRLI\tx" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs1_rd_dash+8) << ", " << hex << "0x" << (int)I_imm_C << "\n";
+                    cout << "\tC.SRLI\t" << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs1_rd_dash+8) << ", " << hex << "0x" << (int)I_imm_C << "\n";
                 }
                 else if (funct2_2 == 1)
                 {
-                    cout << "\tC.SRAI\tx" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs1_rd_dash+8) << ", " << hex << "0x" << (int)I_imm_C << "\n";
+                    cout << "\tC.SRAI\t" << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs1_rd_dash+8) << ", " << hex << "0x" << (int)I_imm_C << "\n";
                 }
                 else if (funct2_2 == 2)
                 {
-                    cout << "\tC.ANDI\tx" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs1_rd_dash+8) << ", " << hex << "0x" << (int)I_imm_C << "\n";
+                    cout << "\tC.ANDI\t" << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs1_rd_dash+8) << ", " << hex << "0x" << (int)I_imm_C << "\n";
                     // in the instruction it is written as imm not nzimm , would it make a diff when coding ? should we add extra conditions?
                 }
                 else if (funct2_2 == 3)
@@ -491,26 +490,26 @@ void instDecExec(unsigned int instWord)
                     switch (funct2_1)
                     {
                     case 0:
-                        cout << "\tC.SUB\tx" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs2_dash+8) << "\n";
+                        cout << "\tC.SUB\t" << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs2_dash+8) << "\n";
                         break;
                     case 1:
-                        cout << "\tC.XOR\tx" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs2_dash+8) << "\n";
+                        cout << "\tC.XOR\t" << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs2_dash+8) << "\n";
                         break;
                     case 2:
-                        cout << "\tC.OR\tx" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs2_dash+8) << "\n";
+                        cout << "\tC.OR\t" << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs2_dash+8) << "\n";
                         break;
                     case 3:
-                        cout << "\tC.AND\tx" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs1_rd_dash+8) << ", x" << ABIname(rs2_dash+8) << "\n";
+                        cout << "\tC.AND\t" << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs2_dash+8) << "\n";
                         break;
                     }
                 }
                 break;
             case 6:
-                cout << "\tC.BEQZ\tx" << ABIname(rs1_C+8) << ", " << hex << "0x" << (int)B_imm_C << "\n";
+                cout << "\tC.BEQZ\t" << ABIname(rs1_C+8) << ", " << hex << "0x" << (int)B_imm_C << "\n";
                 break;
 
             case 7:
-                cout << "\tC.BNEZ\tx" << ABIname(rs1_C+8 )<< ", " << hex << "0x" << (int)B_imm_C << "\n";
+                cout << "\tC.BNEZ\t" << ABIname(rs1_C+8 )<< ", " << hex << "0x" << (int)B_imm_C << "\n";
                 break;
             }
         }
@@ -519,16 +518,16 @@ void instDecExec(unsigned int instWord)
             switch (funct3_C)
             {
             case 0:
-                cout << "\tC.SLLI\tx" << ABIname(rd_rs1+8) << ", x" << ABIname(rd_rs1+8 )<< ", " << hex << "0x" << (int)I_imm_C << "\n";
+                cout << "\tC.SLLI\t" << ABIname(rd_rs1+8) << ", " << ABIname(rd_rs1+8 )<< ", " << hex << "0x" << (int)I_imm_C << "\n";
                 break;
             case 4:
                 if (rd_rs1 != 0 && rs2_C != 0 && nzImm_5 == 1)
                 {
-                    cout << "\tC.ADD\tx" << ABIname(rd_rs1+8 )<< ", x" << ABIname( rd_rs1+8) << ", x" << ABIname(rs2_C+8) << "\n";
+                    cout << "\tC.ADD\t" << ABIname(rd_rs1+8 )<< ", " << ABIname( rd_rs1+8) << ", " << ABIname(rs2_C+8) << "\n";
                 }
                 else if (rd_rs1 != 0 && rs2_C == 0 && nzImm_5 == 1)
                 {
-                    cout << "\tC.JALR\tx" << ABIname(rd_rs1+8) << ", 0"
+                    cout << "\tC.JALR\t" << ABIname(rd_rs1+8) << ", 0"
                          << "\n";
                 }
                 break;
