@@ -425,13 +425,17 @@ void instDecExec(unsigned int instWord)
         {
             cout << "\tAUIPC\t" << ABIname(rd) << ", " << hex << "0x" << (int)U_imm << "\n";
         }
-        else if (opcode == 0x17)
+        else if (opcode == 0x6F)
         {
             cout << "\tJAL\t" << ABIname(rd) << ", " << hex << "0x" << (int)J_imm << "\n";
         }
         else if (opcode == 0x67)
         {
             cout << "\tJALR\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
+        }
+        else if (opcode == 0x73)
+        {
+            cout << "ECALL "<< "\n";
         }
         else
         {
