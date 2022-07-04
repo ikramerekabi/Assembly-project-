@@ -159,8 +159,9 @@ string ABIname(int reg)
     return name;
 }
 
-void instDecExec(unsigned int instWord)
+bool instDecExec(unsigned int instWord)
 {
+    bool isComp; 
     unsigned int t0, t1, t2, t3, rd, rs1, rs2, funct3, funct7, opcode, I_mm_shift, I_mm_S_type_4_0, I_mm_S_type_11_5, I_mm_S_type;
     unsigned int rd_C, rs1_C, Imm_C_2, Imm_C_6, Imm_C_5_3, rs2_C, funct3_C, Imm_C_load, nzImm_4_0, nzImm_5, rd_rs1, I_imm_C, B_imm_C;
     unsigned int opcode_16;
@@ -304,7 +305,16 @@ void instDecExec(unsigned int instWord)
         {
             switch (funct3)
             {
-            case 0:cout << "\tADDI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
+                
+            case 0:
+                if(rd==rs1)
+                {
+                    cout << "\tLI\t" << ABIname(rd) << ", " << hex << "0x" << (int)I_imm << "\n";
+                }
+                else {
+                    cout << "\tADDI\t" << ABIname(rd) << ", " << ABIname(rs1) << ", " << hex << "0x" << (int)I_imm << "\n";
+                }
+
                 break;
     
             case 2:
@@ -435,7 +445,7 @@ void instDecExec(unsigned int instWord)
         }
         else if (opcode == 0x73)
         {
-            cout << "ECALL "<< "\n";
+            cout << "\tECALL "<< "\n";
         }
         else
         {
@@ -444,6 +454,7 @@ void instDecExec(unsigned int instWord)
     }
     else
     {
+        isComp = true;
         // Compressed instructions
         if (opcode_16 == 0x0)
         {
@@ -466,6 +477,7 @@ void instDecExec(unsigned int instWord)
             {
             // compressed I instructions
             case 0:
+                
                 cout << "\tC.ADDI\t" << ABIname(rd_rs1+8) << ", " << ABIname(rd_rs1+8) << ", " << hex << "0x" << (int)I_imm_C << "\n";
                 break;
             case 1:
@@ -543,6 +555,7 @@ void instDecExec(unsigned int instWord)
             cout << "\tUnkown Compresssed Instruction \n";
         }
     }
+    return isComp;
 }
 
 int main(int argc, char *argv[])
@@ -575,7 +588,8 @@ int main(int argc, char *argv[])
             // remove the following line once you have a complete simulator
             if (pc == fsize + 4)
                 break; // stop when PC reached address 32
-            instDecExec(instWord);
+            if (instDecExec(instWord))
+                pc -= 2;
         }
     }
     else
