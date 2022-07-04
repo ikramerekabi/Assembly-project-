@@ -197,7 +197,7 @@ void instDecExec(unsigned int instWord)
     rs1_C = (instWord >> 7) & 0x0007;
     Imm_C_5_3 = (instWord >> 10) & 0x0007;
     funct3_C = (instWord >> 13) & 0x0007;
-
+    rs2_C= (instWord >> 2) & 0x0001F;
     t1 = (Imm_C_6 & 0x001) << 6;   // can we just and it with 0x1 instead of 0x001??????
     t2 = (Imm_C_5_3 & 0x007) << 5; // same question for these? ????????????
     Imm_C_load = t1 | t2;
@@ -212,8 +212,8 @@ void instDecExec(unsigned int instWord)
 
     I_imm_C = ((nzImm_5 & 0x1) << 5) | (nzImm_4_0 & 0x1F); // put back the values of the immediate together.
 
-    rs1_rd_dash = (instWord >> 7) & 0x000F; // store the value of rs1'/ rd'
-    funct2_2 = (instWord >> 11) & 0x0003;   // store funct2_2 value
+    rs1_rd_dash = (instWord >> 7) & 0x0007; // store the value of rs1'/ rd'
+    funct2_2 = (instWord >> 10) & 0x0003;   // store funct2_2 value
 
     rs2_dash = (instWord >> 2) & 0x0007;
     funct2_1 = (instWord >> 5) & 0x0003;
@@ -445,12 +445,12 @@ void instDecExec(unsigned int instWord)
             switch (funct3_C)
             {
             case 2:
-                cout << "\tC.LW\tx" << rd_C << ", 0x" << hex << (int)Imm_C_load << "(x" << rs1_C << ")"
+                cout << "\tC.LW\tx" << rd_C+8 << ", 0x" << hex << (int)Imm_C_load << "(x" << rs1_C+8 << ")"
                      << "\n";
                 break;
 
             case 6:
-                cout << "\tC.SW\tx" << rd_C << ", 0x" << hex << (int)Imm_C_load << "(x" << rs1_C << ")"
+                cout << "\tC.SW\tx" << rd_C+8 << ", 0x" << hex << (int)Imm_C_load << "(x" << rs1_C+8 << ")"
                      << "\n";
                 break;
             }
@@ -461,28 +461,28 @@ void instDecExec(unsigned int instWord)
             {
             // compressed I instructions
             case 0:
-                cout << "\tC.ADDI\tx" << rd_rs1 << ", x" << rd_rs1 << ", " << hex << "0x" << (int)I_imm_C << "\n";
+                cout << "\tC.ADDI\tx" << rd_rs1+8 << ", x" << rd_rs1+8 << ", " << hex << "0x" << (int)I_imm_C << "\n";
                 break;
             case 1:
-                cout << "\tC.JAL\tx1, " << imm_C_Jal << "\n";
+                cout << "\tC.JAL\tx1, " <<hex << "0x" << imm_C_Jal << "\n";
                 break;
             case 3:
                 if (rd_rs1 != 0 && rd_rs1 != 2)
                 {
-                    cout << "\tC.LUI\tx" << rd_rs1 << ", " << hex << "0x" << (int)nzimm_LUI << "\n";
+                    cout << "\tC.LUI\tx" << rd_rs1+8 << ", " << hex << "0x" << (int)nzimm_LUI << "\n";
                 }
             case 4:
                 if (funct2_2 == 0)
                 {
-                    cout << "\tC.SRLI\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", " << hex << "0x" << (int)I_imm_C << "\n";
+                    cout << "\tC.SRLI\tx" << rs1_rd_dash+8 << ", x" << rs1_rd_dash+8 << ", " << hex << "0x" << (int)I_imm_C << "\n";
                 }
                 else if (funct2_2 == 1)
                 {
-                    cout << "\tC.SRAI\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", " << hex << "0x" << (int)I_imm_C << "\n";
+                    cout << "\tC.SRAI\tx" << rs1_rd_dash+8 << ", x" << rs1_rd_dash+8 << ", " << hex << "0x" << (int)I_imm_C << "\n";
                 }
                 else if (funct2_2 == 2)
                 {
-                    cout << "\tC.ANDI\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", " << hex << "0x" << (int)I_imm_C << "\n";
+                    cout << "\tC.ANDI\tx" << rs1_rd_dash+8 << ", x" << rs1_rd_dash+8 << ", " << hex << "0x" << (int)I_imm_C << "\n";
                     // in the instruction it is written as imm not nzimm , would it make a diff when coding ? should we add extra conditions?
                 }
                 else if (funct2_2 == 3)
@@ -490,26 +490,26 @@ void instDecExec(unsigned int instWord)
                     switch (funct2_1)
                     {
                     case 0:
-                        cout << "\tC.SUB\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", x" << rs2_dash << "\n";
+                        cout << "\tC.SUB\tx" << rs1_rd_dash+8 << ", x" << rs1_rd_dash+8 << ", x" << rs2_dash+8 << "\n";
                         break;
                     case 1:
-                        cout << "\tC.XOR\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", x" << rs2_dash << "\n";
+                        cout << "\tC.XOR\tx" << rs1_rd_dash+8 << ", x" << rs1_rd_dash+8 << ", x" << rs2_dash+8 << "\n";
                         break;
                     case 2:
-                        cout << "\tC.OR\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", x" << rs2_dash << "\n";
+                        cout << "\tC.OR\tx" << rs1_rd_dash+8 << ", x" << rs1_rd_dash+8 << ", x" << rs2_dash+8 << "\n";
                         break;
                     case 3:
-                        cout << "\tC.AND\tx" << rs1_rd_dash << ", x" << rs1_rd_dash << ", x" << rs2_dash << "\n";
+                        cout << "\tC.AND\tx" << rs1_rd_dash+8 << ", x" << rs1_rd_dash+8 << ", x" << rs2_dash+8 << "\n";
                         break;
                     }
                 }
                 break;
             case 6:
-                cout << "\tC.BEQZ\tx" << rs1_C << ", " << hex << "0x" << (int)B_imm_C << "\n";
+                cout << "\tC.BEQZ\tx" << rs1_C+8 << ", " << hex << "0x" << (int)B_imm_C << "\n";
                 break;
 
             case 7:
-                cout << "\tC.BNEZ\tx" << rs1_C << ", " << hex << "0x" << (int)B_imm_C << "\n";
+                cout << "\tC.BNEZ\tx" << rs1_C+8 << ", " << hex << "0x" << (int)B_imm_C << "\n";
                 break;
             }
         }
@@ -518,16 +518,16 @@ void instDecExec(unsigned int instWord)
             switch (funct3_C)
             {
             case 0:
-                cout << "\tC.SLLI\tx" << rd_rs1 << ", x" << rd_rs1 << ", " << hex << "0x" << (int)I_imm_C << "\n";
+                cout << "\tC.SLLI\tx" << rd_rs1+8 << ", x" << rd_rs1+8 << ", " << hex << "0x" << (int)I_imm_C << "\n";
                 break;
             case 4:
                 if (rd_rs1 != 0 && rs2_C != 0 && nzImm_5 == 1)
                 {
-                    cout << "\tC.ADD\tx" << rd_rs1 << ", x" << rd_rs1 << ", x" << rs2_C << "\n";
+                    cout << "\tC.ADD\tx" << rd_rs1+8 << ", x" << rd_rs1+8 << ", x" << rs2_C+8 << "\n";
                 }
                 else if (rd_rs1 != 0 && rs2_C == 0 && nzImm_5 == 1)
                 {
-                    cout << "\tC.JALR\tx1" << rd_rs1 << ", 0"
+                    cout << "\tC.JALR\tx" << rd_rs1+8 << ", 0"
                          << "\n";
                 }
                 break;
