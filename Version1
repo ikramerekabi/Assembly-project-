@@ -188,7 +188,7 @@ bool instDecExec(unsigned int instWord)
     // — inst[31] — inst[30:25] inst[24:21] inst[20]
     I_imm = ((instWord >> 20) & 0x7FF) | (((instWord >> 31) ? 0xFFFFF800 : 0x0));
     I_mm_shift = (instWord >> 20) & 0x0000001F; // for SLLI, SRLI, SRAI
-    B_imm = (((instWord >> 8) & 0xF) | ((instWord >> 21) & 0x3F0) | ((instWord << 3) & 0x400) | ((instWord >> 2) & 0x800))<<1;
+    B_imm =(((instWord >> 8) & 0xF) | ((instWord >> 21) & 0x3F0) | ((instWord << 3) & 0x400) | ((instWord >> 2) & 0x800))<<1;
     U_imm = (instWord >> 12) & 0xFFFFF;
     J_imm = ((instWord >> 21) & 0x3FF) | ((instWord >> 10) & 0x400) | ((instWord >> 1) & 0x7F800) | ((instWord >> 12) & 0x80000);
    
