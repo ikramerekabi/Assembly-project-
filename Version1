@@ -185,7 +185,6 @@ bool instDecExec(unsigned int instWord)
     t0 = I_mm_S_type_11_5 & 0x07F;
     t0 = t0 << 5;
     I_mm_S_type = (t0 | I_mm_S_type_4_0);
-    // — inst[31] — inst[30:25] inst[24:21] inst[20]
     I_imm = ((instWord >> 20) & 0x7FF) | (((instWord >> 31) ? 0xFFFFF800 : 0x0));
     I_mm_shift = (instWord >> 20) & 0x0000001F; // for SLLI, SRLI, SRAI
     B_imm = ((instWord >> 8) & 0xF) | ((instWord >> 21) & 0x3F0) | ((instWord << 3) & 0x400) | ((instWord >> 2) & 0x800);
@@ -194,17 +193,13 @@ bool instDecExec(unsigned int instWord)
    
     // for compressed instructions
     rd_C = (instWord >> 2) & 0x0007;
-    Imm_C_6 = (instWord >> 5) & 0x0001;
-    Imm_C_2 = (instWord >> 6) & 0x0001;
+    Imm_C_6 = (instWord >> 5) & 0x001;
+    Imm_C_2 = (instWord >> 6) & 0x001;
     rs1_C = (instWord >> 7) & 0x0007;
-    Imm_C_5_3 = (instWord >> 10) & 0x0007;
+    Imm_C_5_3 = (instWord >> 10) & 0x007;
     funct3_C = (instWord >> 13) & 0x0007;
     rs2_C= (instWord >> 2) & 0x0001F;
-    t1 = (Imm_C_6 & 0x001) << 6;   
-    t2 = (Imm_C_5_3 & 0x007) << 5; 
-    Imm_C_load = t1 | t2;
-    t3 = (Imm_C_2 & 0x001) << 2;
-    Imm_C_load = Imm_C_load | t3;
+    Imm_C_load = ((Imm_C_6 & 0x001) << 6) | ((Imm_C_5_3 & 0x007) << 5) | ((Imm_C_2 & 0x001) << 2) ;
     Imm_C_S= ((instWord >> 2) & 0x01F) | ((instWord >> 12) ? 0x10 : 0x0);//reading the signed immi for compressed instructions
     // for compressed I types
 
@@ -236,12 +231,10 @@ bool instDecExec(unsigned int instWord)
     imm_C_Jal_11 = (instWord >> 12) & 0x001;
 
     // getting the values of the immediate value for the c.jal
-    //imm_C_Jal = ((imm_C_Jal_11 & 0x001) << 11) | ((imm_C_Jal_10 & 0x001) << 10) | ((imm_C_Jal_9_8 & 0x003) << 8) | ((imm_C_Jal_7 & 0x001) << 7) | ((imm_C_Jal_6 & 0x001) << 6) | ((imm_C_Jal_5 & 0x001) << 5) | ((imm_C_Jal_4 & 0x001) << 4) | ((imm_C_Jal_3_1 & 0x001) << 1);
     imm_C_Jal = ( (imm_C_Jal_10 & 0x001) << 10) | ((imm_C_Jal_9_8 & 0x003) << 8) | ((imm_C_Jal_7 & 0x001) << 7) | ((imm_C_Jal_6 & 0x001) << 6) | ((imm_C_Jal_5 & 0x001) << 5) | ((imm_C_Jal_4 & 0x001) << 4) | ((imm_C_Jal_3_1 & 0x001) << 1);
     imm_C_Jal_S = ((imm_C_Jal & 0x3FF) | ((imm_C_Jal_11 ) ? 0x800 : 0x0));
     // for compressed B Instructions
     B_imm_C = ((instWord >> 3) & 0xF) | ((instWord << 2) & 0x1F) | ((instWord >>5) & 0xE0);
-
     if (opcode_16 == 0x3)
     {
         printPrefix(instPC, instWord);
@@ -469,7 +462,10 @@ bool instDecExec(unsigned int instWord)
             case 6:
                 cout << "\tC.SW\t" << ABIname(rd_C+8) << ", 0x" << hex << (int)Imm_C_load << "(" << ABIname(rs1_C+8) << ")"<< "\n";
                 break;
+            default: 
+            cout<<"\tUnknown compressed instruction\n";
             }
+            
         }
         else if (opcode_16 == 0x1)
         {
@@ -504,7 +500,6 @@ bool instDecExec(unsigned int instWord)
                 else if (funct2_2 == 2)
                 {
                     cout << "\tC.ANDI\t" << ABIname(rs1_rd_dash+8) << ", " << ABIname(rs1_rd_dash+8) << ", " << hex << "0x" << (int)Imm_C_S << "\n";
-                    // in the instruction it is written as imm not nzimm , would it make a diff when coding ? should we add extra conditions?
                 }
                 else if (funct2_2 == 3)
                 {
@@ -532,6 +527,8 @@ bool instDecExec(unsigned int instWord)
             case 7:
                 cout << "\tC.BNEZ\t" << ABIname(rs1_C+8 )<< ", " << hex << "0x" << (int)B_imm_C << "\n";
                 break;
+                default: 
+            cout<<"\tUnknown compressed instruction\n";
             }
         }
         else if (opcode_16 == 0x2)
@@ -556,11 +553,9 @@ bool instDecExec(unsigned int instWord)
                     cout << "\tC.MV\t" << ABIname(rd_rs1)<< ", " << ABIname(rs2_C) << "\n";
                 }
                 break;
+            default: 
+            cout<<"\tUnknown compressed instruction\n";
             }
-        }
-        else
-        {
-            cout << "\tUnkown Compresssed Instruction \n";
         }
     }
     return isComp;
@@ -588,15 +583,15 @@ int main(int argc, char *argv[])
 
         while (true)
         {
+
             instWord = (unsigned char)memory[pc] |
                        (((unsigned char)memory[pc + 1]) << 8) |
                        (((unsigned char)memory[pc + 2]) << 16) |
                        (((unsigned char)memory[pc + 3]) << 24);
             pc += 4;
-            // remove the following line once you have a complete simulator
             if (pc == fsize + 4)
                 break; // stop when PC reached address 32
-            if (instDecExec(instWord))
+            if (instDecExec(instWord))// if the instruction is compressed
                 pc -= 2;
         }
     }
